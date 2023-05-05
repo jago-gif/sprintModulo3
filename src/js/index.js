@@ -1,10 +1,14 @@
 //se inicializa variable tCargas como false (esta variable se utiliza para habilitar el campo cantCargas cuando se palomea el checkbox tieneCarga)
 let tCargas = false;
+const fecha = new Date
 //inicializa trabajador con 2 key y value
 trabajador = {
   trabajadorActivo : false,
   tieneCarga : false,
 }
+let mensaje;
+let mensaje1;
+let alerta;
 //Seleccionar el formulario
 const form = document.getElementById('formulario');
 
@@ -19,22 +23,61 @@ let sueldoFinal;
 
 //Agregar listener para el evento submit
 form.addEventListener('submit', function (event) {
+  //se detiene el recargar del evento submint
+  event.preventDefault();
+  cargarTrabajador();
+
+  
+
   //Verificar si el formulario es válido
   if (!form.checkValidity()) {
-    //se detiene el recargar del evento submint
-    event.preventDefault();
+  if((trabajador.nombre===""||trabajador.nombre===null||trabajador.nombre===undefined)||
+  (trabajador.apellido===""||trabajador.apellido===null||trabajador.apellido===undefined)||
+  (trabajador.fechaNacimiento===""||trabajador.fechaNacimiento===null||trabajador.fechaNacimiento===undefined)||
+  (trabajador.fechaEntrada===""||trabajador.fechaEntrada===null||trabajador.fechaEntrada===undefined)||
+  (trabajador.sueldoActual===""||trabajador.sueldoActual===null||trabajador.sueldoActual===undefined)||
+  (trabajador.sueldoAnterior===""||trabajador.sueldoAnterior===null||trabajador.sueldoAnterior===undefined)){
+    Swal.fire({
+      icon: 'error',
+      title: 'Campo incompleto',
+      text: 'Debe completar todos los campos',
+    }) 
+  }
     //Agregar clase CSS de Bootstrap al formulario para mostrar los campos faltantes en la validación
   form.classList.add('was-validated');
   }else{
-    //se detiene el recargar del evento submint
-    event.preventDefault();
-    cargarTrabajador();
+    
+  let fnac = new Date(trabajador.fechaNacimiento);
+  let fent = new Date(trabajador.fechaEntrada);
+
+  if(fecha>fent){
+    Swal.fire({
+      icon: 'error',
+      title: 'Error Fecha',
+      text: 'La fecha de ingreso a la empresa no debe ser superior a la fecha actual',
+    }) 
+    return
+  }
+
+  if(fecha>fnac){
+    Swal.fire({
+      icon: 'error',
+      title: 'Error Fecha',
+      text: 'La fecha de nacimiento no debe ser superior a la fecha actual',
+    }) 
+    return
+  }
     //se inicia el punto B del spring
     pertenenciaEmpresa(trabajador);
+    
     //se inicia el punto C del spring
     calcularCargas(trabajador);
+    
     //se inicia el punto D del spring
     entregaFull(trabajador);
+
+    mensajesweet1();
+
   }
   
 });
@@ -116,12 +159,13 @@ let pertenenciaEmpresa = ()=>{
   const diasRestantesAnio = Math.ceil(milisegundosRestantesAnio / (diaMiliseg));
   
   //llamada de alerta con la información 
-  let alerta = `
-  Su permanencia en la organización es de ${diasTranscurridos} días
-  Su permanencia en la organización es de ${mesesTranscurridos} meses
-  Su permanencia en la organización es de ${anosGral} años y ${mesesGral} meses y ${diasGral} días 
-  Para completar el año de permanencia faltan: ${diasRestantesAnio}`
-  alert(alerta)
+   alerta = 
+  "Su permanencia en la organización es de "+diasTranscurridos+" días"+ 
+  "<br>Su permanencia en la organización es de "+mesesTranscurridos+" meses"+ 
+  "<br>Su permanencia en la organización es de "+ anosGral+" años y "+mesesGral+" meses y "+diasGral+" días "
+  "<br>Para completar el año de permanencia faltan: "+diasRestantesAnio
+
+  return alerta;
 } 
 //variable que contiene la funcion C del spring
 let calcularCargas = ()=>{
@@ -153,8 +197,9 @@ let calcularCargas = ()=>{
   //se agregan los valores de sueldoFinal y valorCarga al objeto trabajador
   trabajador.sueldoFinal = sueldoFinal;
   trabajador.valorCarga = valorCarga;
-  return alert("Sr/a " + trabajador.nombre + " " + trabajador.apellido + " su sueldo actual es de $" + trabajador.sueldoActual + " y el valor por carga familiar es de $" 
-  + valorCarga + " y su sueldo final es de $" + sueldoFinal)
+  mensaje1 = "Sr/a " + trabajador.nombre + " " + trabajador.apellido + "<br> Su sueldo actual es de $" + trabajador.sueldoActual + " <br>Y el valor por carga familiar es de $" 
+  + valorCarga + " <br>Y su sueldo final es de $" + sueldoFinal
+ return mensaje1;
 }
 //variable que contiene la funcion D del spring
 let entregaFull = () =>{
@@ -169,23 +214,23 @@ let entregaFull = () =>{
   }else{
     trabajador.tieneCarga = "NO"
   }
-  if(trabajador.cantCargas===""){
+  if(trabajador.cantCargas===""||isNaN(trabajador.cantCargas)){
     trabajador.cantCargas = 0;
   }
     //llamada de alerta con la información 
-    let mensaje = `
-    Nombre : ${trabajador.nombre}
-    Apellido : ${trabajador.apellido}
-    Fecha de nacimiento : ${trabajador.fechaNacimiento} 
-    Trabajador activo : ${trabajador.trabajadorActivo}
-    Fecha de entrada : ${trabajador.fechaEntrada}
-    Sueldo actual :$ ${trabajador.sueldoActual}
-    Sueldo trimestre anterior :$ ${trabajador.sueldoAnterior}
-    Tiene cargas familiares : ${trabajador.tieneCarga}
-    Cantidad de cargas familiares: ${trabajador.cantCargas}
-    Monto de carga familiar :$ ${trabajador.valorCarga}
-    Sueldo final :$ ${trabajador.sueldoFinal}`
-  alert(mensaje)
+    mensaje = 
+    "Nombre :"+ trabajador.nombre+
+    "<br>Apellido :"+ trabajador.apellido+
+    "<br>Fecha de nacimiento :"+ trabajador.fechaNacimiento +
+    "<br>Trabajador activo :"+ trabajador.trabajadorActivo+
+    "<br>Fecha de entrada :" +trabajador.fechaEntrada+
+    "<br>Sueldo actual :$"+ trabajador.sueldoActual+
+    "<br>Sueldo trimestre anterior :$" +trabajador.sueldoAnterior+
+    "<br>Tiene cargas familiares :"+ trabajador.tieneCarga+
+    "<br>Cantidad de cargas familiares:"+ trabajador.cantCargas+
+    "<br>Monto de carga familiar :$"+ trabajador.valorCarga+
+    "<br>Sueldo final :$" +trabajador.sueldoFinal
+  return mensaje
 }
 
 let cargarTrabajador=()=>{
@@ -202,5 +247,37 @@ let cargarTrabajador=()=>{
   cantCargas : parseInt(document.getElementById('cantCargas').value),
 }
 return(trabajador)
+}
+
+function mensajesweet1(){
+  Swal.fire({
+    title:'Pertenencia a la empresa',
+    html:alerta,
+    showCloseButton: true,
+    didClose: () => {
+      // Muestra otra alerta al cerrar la anterior
+      mensajesweet2();
+    }
+
+  })
+}
+function mensajesweet2(){
+  Swal.fire({
+    title:'Datos carga familiar Trabajador',
+    html:mensaje1,
+    showCloseButton: true,
+    didClose: () => {
+      // Muestra otra alerta al cerrar la anterior
+      mensajesweet3();
+    }
+
+  })
+}
+function mensajesweet3(){
+  Swal.fire({
+    title:'Datos del trabajador',
+  html:mensaje,
+  showCloseButton: true
+  })
 }
 
