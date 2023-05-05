@@ -1,0 +1,27 @@
+:root{
+  --gradient:  linear-gradient(to right, #7E93FC,  #FC5F7E);
+}
+*{
+  box-sizing: border-box;
+}
+body{
+  font-family: sans-serif;
+  color: #000000;
+  background: rgb(16, 215, 251);
+  background-image: var(--gradient);
+  background-size: 400%;
+  animation: fondo-anim 20s infinite alternate;
+}
+@keyframes fondo-anim{
+  0%{background-position: left;} /*por defecto*/
+  100%{background-position: right;}
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    }
+input[type=number] { 
+  -moz-appearance:textfield; 
+}
